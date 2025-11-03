@@ -1,0 +1,8 @@
+=== Teks Asli ===
+Pada pagi yang cerah, udara terasa begitu segar, menyegarkan tubuh dan pikiran. Burung-burung berkicau riang di atas pohon, seolah menyambut hari baru dengan penuh semangat. Di jalanan, aktivitas masyarakat mulai tampak—ada yang berlari pagi, ada juga yang memulai perjalanan menuju tempat kerja. Sementara itu, di sebuah kedai kopi kecil di sudut jalan, para pelanggan menikmati secangkir kopi hangat sambil berbincang ringan. Pagi hari seperti ini selalu membawa rasa damai dan penuh harapan untuk menjalani sisa hari.
+
+=== Hasil Penghitungan ===
+Jumlah Kata: 76
+Jumlah Karakter: 520
+Jumlah Kalimat: 5
+Jumlah Paragraf: 1

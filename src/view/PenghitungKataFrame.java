@@ -4,6 +4,10 @@
  */
 package view;
 
+import helper.PenghitungKataFileHelper;
+import helper.PenghitungKataHelper;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author slozoy
@@ -15,6 +19,18 @@ public class PenghitungKataFrame extends javax.swing.JFrame {
      */
     public PenghitungKataFrame() {
         initComponents();
+        
+        txtInput.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            public void insertUpdate(javax.swing.event.DocumentEvent e) { updateStats(); }
+            public void removeUpdate(javax.swing.event.DocumentEvent e) { updateStats(); }
+            public void changedUpdate(javax.swing.event.DocumentEvent e) { updateStats(); }
+        });
+    }
+    
+    private void updateStats() {
+            String teks = txtInput.getText();
+            lblKata.setText("Jumlah Kata: " + PenghitungKataHelper.hitungKata(teks));
+            lblKarakter.setText("Jumlah Karakter: " + PenghitungKataHelper.hitungKarakter(teks));
     }
 
     /**
@@ -31,7 +47,7 @@ public class PenghitungKataFrame extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        txtInput = new javax.swing.JTextArea();
         txtCari = new javax.swing.JTextField();
         jSeparator1 = new javax.swing.JSeparator();
         jPanel2 = new javax.swing.JPanel();
@@ -43,7 +59,7 @@ public class PenghitungKataFrame extends javax.swing.JFrame {
         lblKalimat = new javax.swing.JLabel();
         lblParagraf = new javax.swing.JLabel();
         btnHitung = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        btnSimpan = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -57,11 +73,25 @@ public class PenghitungKataFrame extends javax.swing.JFrame {
 
         jLabel2.setText("Pencarian Kata:");
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jTextArea1.setText("Silahkan input teks disini!");
-        jTextArea1.setWrapStyleWord(true);
-        jScrollPane1.setViewportView(jTextArea1);
+        txtInput.setColumns(20);
+        txtInput.setLineWrap(true);
+        txtInput.setRows(5);
+        txtInput.setText("Silahkan input teks disini!");
+        txtInput.setWrapStyleWord(true);
+        txtInput.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtInputFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtInputFocusLost(evt);
+            }
+        });
+        txtInput.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtInputMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(txtInput);
 
         jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
@@ -75,8 +105,8 @@ public class PenghitungKataFrame extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblHasilCari)
-                .addContainerGap(134, Short.MAX_VALUE))
+                .addComponent(lblHasilCari, javax.swing.GroupLayout.DEFAULT_SIZE, 363, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -87,6 +117,11 @@ public class PenghitungKataFrame extends javax.swing.JFrame {
         );
 
         btnCari.setText("Cari Kata");
+        btnCari.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCariActionPerformed(evt);
+            }
+        });
 
         jPanel3.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
@@ -104,12 +139,12 @@ public class PenghitungKataFrame extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblKata, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblKarakter)
-                    .addComponent(lblKalimat)
-                    .addComponent(lblParagraf))
-                .addContainerGap(83, Short.MAX_VALUE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(lblKata, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblKarakter, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
+                    .addComponent(lblKalimat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblParagraf, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(19, 19, 19))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -126,8 +161,18 @@ public class PenghitungKataFrame extends javax.swing.JFrame {
         );
 
         btnHitung.setText("Hitung");
+        btnHitung.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHitungActionPerformed(evt);
+            }
+        });
 
-        jButton1.setText("Simpan ");
+        btnSimpan.setText("Simpan ");
+        btnSimpan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSimpanActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -155,7 +200,7 @@ public class PenghitungKataFrame extends javax.swing.JFrame {
                         .addGap(85, 85, 85)
                         .addComponent(btnHitung, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(32, 32, 32)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnSimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -172,7 +217,7 @@ public class PenghitungKataFrame extends javax.swing.JFrame {
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnSimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnHitung, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -219,6 +264,55 @@ public class PenghitungKataFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnHitungActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHitungActionPerformed
+        // TODO add your handling code here:
+        String teks = txtInput.getText();
+        int kata = PenghitungKataHelper.hitungKata(teks);
+        int karakter = PenghitungKataHelper.hitungKarakter(teks);
+        int kalimat = PenghitungKataHelper.hitungKalimat(teks);
+        int paragraf = PenghitungKataHelper.hitungParagraf(teks);
+
+        lblKata.setText("Jumlah Kata: " + kata);
+        lblKarakter.setText("Jumlah Karakter: " + karakter);
+        lblKalimat.setText("Jumlah Kalimat: " + kalimat);
+        lblParagraf.setText("Jumlah Paragraf: " + paragraf);
+    }//GEN-LAST:event_btnHitungActionPerformed
+
+    private void btnCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariActionPerformed
+        // TODO add your handling code here:
+        String teks = txtInput.getText();
+        String kataDicari = txtCari.getText();
+        int jumlah = PenghitungKataHelper.cariKata(teks, kataDicari);
+        lblHasilCari.setText("Kata \"" + kataDicari + "\" ditemukan " + jumlah + " kali.");
+    }//GEN-LAST:event_btnCariActionPerformed
+
+    private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
+        // TODO add your handling code here:
+        String teks = txtInput.getText();
+        String hasil = lblKata.getText() + "\n" + lblKarakter.getText() + "\n" +
+                       lblKalimat.getText() + "\n" + lblParagraf.getText();
+        PenghitungKataFileHelper.simpanKeFile(teks, hasil);
+        JOptionPane.showMessageDialog(this, "Teks dan hasil berhasil disimpan!");
+    }//GEN-LAST:event_btnSimpanActionPerformed
+
+    private void txtInputMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtInputMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtInputMouseClicked
+
+    private void txtInputFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtInputFocusGained
+        // TODO add your handling code here:
+        if (txtInput.getText().equals("Silahkan input teks disini!")) {
+            txtInput.setText("");
+        }
+    }//GEN-LAST:event_txtInputFocusGained
+
+    private void txtInputFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtInputFocusLost
+        // TODO add your handling code here:
+        if (txtInput.getText().trim().isEmpty()) {
+            txtInput.setText("Silahkan input teks disini!");
+        }
+    }//GEN-LAST:event_txtInputFocusLost
+
     /**
      * @param args the command line arguments
      */
@@ -257,7 +351,7 @@ public class PenghitungKataFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCari;
     private javax.swing.JButton btnHitung;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnSimpan;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
@@ -266,7 +360,6 @@ public class PenghitungKataFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JLabel lblHasilCari;
     private javax.swing.JLabel lblKalimat;
     private javax.swing.JLabel lblKarakter;
@@ -274,5 +367,6 @@ public class PenghitungKataFrame extends javax.swing.JFrame {
     private javax.swing.JLabel lblParagraf;
     private javax.swing.JLabel lblTitle;
     private javax.swing.JTextField txtCari;
+    private javax.swing.JTextArea txtInput;
     // End of variables declaration//GEN-END:variables
 }
