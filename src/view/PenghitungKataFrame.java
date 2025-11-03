@@ -4,8 +4,13 @@
  */
 package view;
 
-import helper.PenghitungKataFileHelper;
 import helper.PenghitungKataHelper;
+import java.awt.Color;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 /**
@@ -20,17 +25,178 @@ public class PenghitungKataFrame extends javax.swing.JFrame {
     public PenghitungKataFrame() {
         initComponents();
         
+        // === Placeholder Setup untuk txtInput ===
+        Color placeholderColor = new Color(150, 150, 150);
+        Color normalColor = Color.BLACK;
+
+        // Set placeholder awal
+        txtInput.setForeground(placeholderColor);
+        txtInput.setText("Silahkan input teks disini!");
+
+        // Nonaktifkan tombol awalnya
+        btnHitung.setEnabled(false);
+        btnCari.setEnabled(false);
+        btnSimpan.setEnabled(false);
+
+        // Listener untuk txtInput
+        txtInput.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                if (txtInput.getText().equals("Silahkan input teks disini!")) {
+                    txtInput.setText("");
+                    txtInput.setForeground(normalColor);
+                }
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                if (txtInput.getText().trim().isEmpty()) {
+                    txtInput.setText("Silahkan input teks disini!");
+                    txtInput.setForeground(placeholderColor);
+                }
+                updateButtonState();
+            }
+        });
+
+        // === Placeholder Setup untuk txtCari ===
+        txtCari.setForeground(placeholderColor);
+        txtCari.setText("Masukkan kata yang ingin dicari...");
+
+        txtCari.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                if (txtCari.getText().equals("Masukkan kata yang ingin dicari...")) {
+                    txtCari.setText("");
+                    txtCari.setForeground(normalColor);
+                }
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                if (txtCari.getText().trim().isEmpty()) {
+                    txtCari.setText("Masukkan kata yang ingin dicari...");
+                    txtCari.setForeground(placeholderColor);
+                }
+                updateButtonState();
+            }
+        });
+
+        // === DocumentListener untuk update tombol saat mengetik ===
         txtInput.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-            public void insertUpdate(javax.swing.event.DocumentEvent e) { updateStats(); }
-            public void removeUpdate(javax.swing.event.DocumentEvent e) { updateStats(); }
-            public void changedUpdate(javax.swing.event.DocumentEvent e) { updateStats(); }
+            public void insertUpdate(javax.swing.event.DocumentEvent e) { handleInputChange(); }
+            public void removeUpdate(javax.swing.event.DocumentEvent e) { handleInputChange(); }
+            public void changedUpdate(javax.swing.event.DocumentEvent e) { handleInputChange(); }
+        });
+
+        txtCari.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            public void insertUpdate(javax.swing.event.DocumentEvent e) { handleCariChange(); }
+            public void removeUpdate(javax.swing.event.DocumentEvent e) { handleCariChange(); }
+            public void changedUpdate(javax.swing.event.DocumentEvent e) { handleCariChange(); }
         });
     }
     
+    private void updateButtonState() {
+        String teksInput = txtInput.getText().trim();
+        String teksCari = txtCari.getText().trim();
+
+        boolean inputValid = !teksInput.isEmpty() && 
+                             !teksInput.equals("Silahkan input teks disini!");
+        boolean cariValid = !teksCari.isEmpty() &&
+                            !teksCari.equals("Masukkan kata yang ingin dicari...");
+
+        btnHitung.setEnabled(inputValid);
+        btnSimpan.setEnabled(inputValid);
+        btnCari.setEnabled(inputValid && cariValid);
+    }
+    
+    private void updateSearchResultPlaceholder() {
+        String teksCari = txtCari.getText().trim();
+
+        // Jika kosong atau masih placeholder
+        if (teksCari.isEmpty() || teksCari.equals("Masukkan kata yang ingin dicari...")) {
+            lblHasilCari.setText("Hasil Pencarian Kata akan ditampilkan disini.");
+        }
+    }
+    
     private void updateStats() {
-            String teks = txtInput.getText();
-            lblKata.setText("Jumlah Kata: " + PenghitungKataHelper.hitungKata(teks));
-            lblKarakter.setText("Jumlah Karakter: " + PenghitungKataHelper.hitungKarakter(teks));
+        String teks = txtInput.getText().trim();
+
+        // Jika kosong atau masih placeholder → tampilkan teks default
+        if (teks.isEmpty() || teks.equals("Silahkan input teks disini!")) {
+            lblKata.setText("Hasil Jumlah Kata akan ditampilkan disini.");
+            lblKarakter.setText("Hasil Jumlah Karakter akan ditampilkan disini.");
+            lblKalimat.setText("Tekan Tombol Hitung untuk Menghitung Jumlah Kalimat!");
+            lblParagraf.setText("Tekan Tombol Hitung untuk Menghitung Jumlah Paragraf!");
+            return;
+        }
+
+        // Jika ada teks valid → tampilkan hasil real-time
+        int kata = helper.PenghitungKataHelper.hitungKata(teks);
+        int karakter = helper.PenghitungKataHelper.hitungKarakter(teks);
+
+        lblKata.setText("Jumlah Kata: " + kata);
+        lblKarakter.setText("Jumlah Karakter: " + karakter);
+    }
+    
+    private void handleCariChange() {
+        updateButtonState();
+        updateSearchResultPlaceholder();
+    }
+    
+    private void handleInputChange() {
+        updateStats();
+        updateButtonState();
+    }
+    
+    private void simpanTXT() {
+        String teks = txtInput.getText().trim();
+
+        // Jalankan logika hitung otomatis (kalau user belum tekan tombol Hitung)
+        int jumlahKata = helper.PenghitungKataHelper.hitungKata(teks);
+        int jumlahKarakter = helper.PenghitungKataHelper.hitungKarakter(teks);
+        int jumlahKalimat = helper.PenghitungKataHelper.hitungKalimat(teks);
+        int jumlahParagraf = helper.PenghitungKataHelper.hitungParagraf(teks);
+
+        // Pastikan label di-update juga biar sinkron
+        lblKata.setText("Jumlah Kata: " + jumlahKata);
+        lblKarakter.setText("Jumlah Karakter: " + jumlahKarakter);
+        lblKalimat.setText("Jumlah Kalimat: " + jumlahKalimat);
+        lblParagraf.setText("Jumlah Paragraf: " + jumlahParagraf);
+
+        // Lanjut ke pemilihan file
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Simpan Hasil Penghitungan");
+        int userSelection = fileChooser.showSaveDialog(this);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+
+            // Tambahkan ekstensi .txt jika belum ada
+            if (!fileToSave.getAbsolutePath().endsWith(".txt")) {
+                fileToSave = new File(fileToSave.getAbsolutePath() + ".txt");
+            }
+
+            String hasil =
+                "Jumlah Kata: " + jumlahKata + "\n" +
+                "Jumlah Karakter: " + jumlahKarakter + "\n" +
+                "Jumlah Kalimat: " + jumlahKalimat + "\n" +
+                "Jumlah Paragraf: " + jumlahParagraf + "\n";
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileToSave))) {
+                writer.write("=== Teks Asli ===\n");
+                writer.write(teks + "\n\n");
+                writer.write("=== Hasil Penghitungan ===\n");
+                writer.write(hasil);
+
+                JOptionPane.showMessageDialog(this,
+                    "Teks dan hasil berhasil disimpan ke:\n" + fileToSave.getAbsolutePath(),
+                    "Berhasil", JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this,
+                    "Gagal menyimpan file: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     /**
@@ -93,6 +259,8 @@ public class PenghitungKataFrame extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(txtInput);
 
+        txtCari.setText("Masukkan kata yang ingin dicari...");
+
         jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
         jPanel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -129,9 +297,9 @@ public class PenghitungKataFrame extends javax.swing.JFrame {
 
         lblKarakter.setText("Hasil Jumlah Karakter akan ditampilkan disini. ");
 
-        lblKalimat.setText("Hasil Jumlah Kalimat akan ditampilkan disini. ");
+        lblKalimat.setText("Tekan Tombol Hitung untuk Menghitung Jumlah Kalimat!");
 
-        lblParagraf.setText("Hasil Jumlah Paragraf akan ditampilkan disini.");
+        lblParagraf.setText("Tekan Tombol Hitung untuk Menghitung Jumlah Paragraf!");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -141,9 +309,9 @@ public class PenghitungKataFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(lblKata, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lblKarakter, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
+                    .addComponent(lblKarakter, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lblKalimat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lblParagraf, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(lblParagraf, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE))
                 .addGap(19, 19, 19))
         );
         jPanel3Layout.setVerticalGroup(
@@ -280,19 +448,22 @@ public class PenghitungKataFrame extends javax.swing.JFrame {
 
     private void btnCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariActionPerformed
         // TODO add your handling code here:
-        String teks = txtInput.getText();
+            String teks = txtInput.getText();
         String kataDicari = txtCari.getText();
-        int jumlah = PenghitungKataHelper.cariKata(teks, kataDicari);
+
+        // Cek apakah valid
+        if (kataDicari.equals("Masukkan kata yang ingin dicari...") || kataDicari.trim().isEmpty()) {
+            lblHasilCari.setText("Hasil Pencarian Kata akan ditampilkan disini.");
+            return;
+        }
+
+        int jumlah = helper.PenghitungKataHelper.cariKata(teks, kataDicari);
         lblHasilCari.setText("Kata \"" + kataDicari + "\" ditemukan " + jumlah + " kali.");
     }//GEN-LAST:event_btnCariActionPerformed
 
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
         // TODO add your handling code here:
-        String teks = txtInput.getText();
-        String hasil = lblKata.getText() + "\n" + lblKarakter.getText() + "\n" +
-                       lblKalimat.getText() + "\n" + lblParagraf.getText();
-        PenghitungKataFileHelper.simpanKeFile(teks, hasil);
-        JOptionPane.showMessageDialog(this, "Teks dan hasil berhasil disimpan!");
+        simpanTXT();
     }//GEN-LAST:event_btnSimpanActionPerformed
 
     private void txtInputMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtInputMouseClicked
@@ -301,16 +472,10 @@ public class PenghitungKataFrame extends javax.swing.JFrame {
 
     private void txtInputFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtInputFocusGained
         // TODO add your handling code here:
-        if (txtInput.getText().equals("Silahkan input teks disini!")) {
-            txtInput.setText("");
-        }
     }//GEN-LAST:event_txtInputFocusGained
 
     private void txtInputFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtInputFocusLost
         // TODO add your handling code here:
-        if (txtInput.getText().trim().isEmpty()) {
-            txtInput.setText("Silahkan input teks disini!");
-        }
     }//GEN-LAST:event_txtInputFocusLost
 
     /**

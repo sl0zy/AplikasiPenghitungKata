@@ -179,6 +179,9 @@
           </SubComponents>
         </Container>
         <Component class="javax.swing.JTextField" name="txtCari">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Masukkan kata yang ingin dicari..."/>
+          </Properties>
         </Component>
         <Component class="javax.swing.JSeparator" name="jSeparator1">
           <Properties>
@@ -246,9 +249,9 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="lblKata" max="32767" attributes="0"/>
-                          <Component id="lblKarakter" alignment="0" pref="350" max="32767" attributes="0"/>
+                          <Component id="lblKarakter" alignment="0" max="32767" attributes="0"/>
                           <Component id="lblKalimat" alignment="0" max="32767" attributes="0"/>
-                          <Component id="lblParagraf" alignment="0" max="32767" attributes="0"/>
+                          <Component id="lblParagraf" alignment="0" pref="350" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
                   </Group>
@@ -283,12 +286,12 @@
             </Component>
             <Component class="javax.swing.JLabel" name="lblKalimat">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Hasil Jumlah Kalimat akan ditampilkan disini. "/>
+                <Property name="text" type="java.lang.String" value="Tekan Tombol Hitung untuk Menghitung Jumlah Kalimat!"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="lblParagraf">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Hasil Jumlah Paragraf akan ditampilkan disini."/>
+                <Property name="text" type="java.lang.String" value="Tekan Tombol Hitung untuk Menghitung Jumlah Paragraf!"/>
               </Properties>
             </Component>
           </SubComponents>
